@@ -2,11 +2,14 @@ import SwiftUI
 import CoreBluetooth
 
 struct PrinterSettingsView: View {
-    @StateObject private var bt = BluetoothManager()
+
+    // ⭐ 改成使用 App-level BluetoothManager
+    @EnvironmentObject var bt: BluetoothManager
 
     var body: some View {
         List {
 
+            // MARK: - 狀態
             Section("狀態") {
                 HStack {
                     Text("藍牙")
@@ -18,11 +21,12 @@ struct PrinterSettingsView: View {
                 HStack {
                     Text("目前連線")
                     Spacer()
-                    Text(bt.connectedPeripheral?.name ?? "未連線")
+                    Text(bt.connectedDeviceName ?? "未連線")
                         .foregroundStyle(.secondary)
                 }
             }
 
+            // MARK: - 裝置列表
             Section("裝置") {
                 Button {
                     bt.isScanning ? bt.stopScan() : bt.startScan()
@@ -48,7 +52,7 @@ struct PrinterSettingsView: View {
                     }
                 }
 
-                if bt.connectedPeripheral != nil {
+                if bt.isConnected {
                     Button(role: .destructive) {
                         bt.disconnect()
                     } label: {
